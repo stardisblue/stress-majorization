@@ -1,4 +1,12 @@
-### 1.0.0 (10/10/2019)
+# 1.0.1 (2019.10.10)
+
+- fix: LICENSE MIT now for real
+- prepare instead of build in package.json
+- has now a homepage and repository
+- is finally on npm
+- has less :construction:
+
+# 1.0.0 (2019.10.10)
 
 First version :firework:
 
