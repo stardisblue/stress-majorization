@@ -262,7 +262,7 @@ contains basic operations for vector manipulation
 
 ## License
 
-MIT <3
+see [LICENSE](./LICENSE.md) <3
 
 ## Authors
 
