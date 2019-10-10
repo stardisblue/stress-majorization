@@ -1,0 +1,14 @@
+{
+  "name": "stress-majorization",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Fati Chen <fati.chen@lirmm.fr>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^3.6.3"
+  },
+  "dependencies": {}
+}
