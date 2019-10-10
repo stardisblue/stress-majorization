@@ -15,11 +15,11 @@ A future implementation may include n dimensional data.
 
 ## Installing
 
-:construction: **SOON&trade;** :construction: Using npm:
+Using npm:
 
     $ npm install stress-majorization
 
-:construction: **SOON&trade;** :construction: Using yarn:
+Using yarn:
 
     $ yarn add stress-majorization
 
