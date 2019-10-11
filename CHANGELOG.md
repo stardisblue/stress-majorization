@@ -1,3 +1,8 @@
+# 1.1.2 (2019.10.11)
+
+- Removing dist folder from repository
+- adding `dist` to file options
+
 # 1.1.0 (2019.10.11)
 
 Big update, please upgrade to be able to use custom datasets

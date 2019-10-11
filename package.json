@@ -2,6 +2,9 @@
   "name": "stress-majorization",
   "version": "1.1.1",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/stardisblue/stress-majorization#stress-majorization",
   "repository": "github:stardisblue/stress-majorization",
   "author": "Fati Chen <fati.chen@lirmm.fr>",
