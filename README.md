@@ -41,8 +41,8 @@ const result = StressMajorization(
       returns number*/
     }
     /* Default options
-    x: (i) => i[0],
-    y: (i) => i[1],
+    fromPoint: (i) => i,
+    toPoint: (i) => i,
     ignore: (_i, j, _iIdx, jIdx) => iIdx === jIdx,
     epsilon: Math.pow(10, -6)
     */
@@ -68,8 +68,8 @@ const customData = [{ x: 0, y: 0 }, { x: 1, y: 10 } /*, ...*/];
 const result = StressMajorization(customData, {
   weight: weight,
   stress: stress,
-  x: i => i.x,
-  y: i => i.y
+  fromPoint: ([x, y]) => ({ x, y }),
+  toPoint: ({ x, y }) => [x, y]
 });
 ```
 
@@ -83,8 +83,8 @@ It is possible to skip pairs by passing an `ignore` function in the options.
 const result = StressMajorization(data, {
   weight: weight,
   stress: stress,
-  x: i => i.x,
-  y: i => i.y,
+  fromPoint: ([x, y]) => ({ x, y }),
+  toPoint: ({ x, y }) => [x, y],
   ignore: (i, j, iIdx, jIdx) => i.x === j.x && i.y === j.y
 });
 ```
@@ -175,11 +175,11 @@ const options = {
   // Stress function, i, j represents items from the dataset
   stress: (i, j) => number,
 
-  // accessor for x coordinate
-  x: i => number, // default to (i) => i[0]
+  // converts `Point` (internal object structure) to coordinates of the output object.
+  fromPoint: ([x, y]) => ({ x, y }), // default to (i) => i
 
-  // accessor for y coordinate
-  y: i => number, // default to (i) => i[1]
+  // converts data item to `Point` (internal)
+  toPoint: ({ x, y }) => [x, y], // default to (i) => i
 
   // will ignore stress on this pair if yields true, iIdx and jIdx are the position of i, j in the data array
   ignore: (i, j, iIdx, jIdx) => boolean, // default to (i, j, iIdx, jIdx) => iIdx === jIdx
@@ -208,8 +208,8 @@ const Distance = {
 > **Note** `Point` will be used instead of `[number, number]` because it's easier to read
 
 - distance: `(i: Point, j:Point) => number`
-- x: `(i: any) => number`
-- y: `(i: any) => number`
+- toPoint: `(i: any) => Point`
+- fromPoint: `(i: Point) => any`
 
 ##### returns
 
@@ -223,8 +223,8 @@ const Distance = {
 > type Point = [number, number];
 > const DistanceFactory = <T>(
 >   distance: (i: Point, j: Point) => number,
->   x: (i: T) => number,
->   y: (j: T) => number
+>   fromPoint: (i: Point) => Partial<T>,
+>   toPoint: (i: T) => Point
 > ): (i: T, j: T) => number
 > ```
 
