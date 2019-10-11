@@ -10,8 +10,8 @@ type Options<T> = {
   weight: PairFn<T>;
   stress: PairFn<T>;
   ignore?: IgnoreFn<T>;
-  x?: KeyFn<T>;
-  y?: KeyFn<T>;
+  toPoint: (n: T) => Point;
+  fromPoint: (i: Point) => Partial<T>;
   epsilon?: number;
 };
 
@@ -26,8 +26,8 @@ type Options<T> = {
  *   weight: (i, j) => length(i - j) ** 2,// `WeightFactory` helper allows it to be adapted with `Distance` calculations
  *
  *   stress: (i, j) => 0, // stress function this cannot be defined via helpers :(
- *   x: (i) => i[0], // accessor to the x coordinate
- *   y: (i) => i[1], // accessor to the y coordinate
+ *   toPoint: (i) => i, // accessor to the x coordinate
+ *   fromPoint: (i) => i, // accessor to the y coordinate
  *   epsilon: Math.pow(10, -6), // relative change of the configuration
  *   ignore: (i, j, iIdx, jIdx) => iIdx === jIdx // ignores pair (i, j) when this function returns true
  * })
@@ -39,8 +39,8 @@ type Options<T> = {
  * if a point is represented by `[x, y]` then, the accessors don't need to be defined
  * ```js
  * const defaultOptions = {
- *   x: (i) => i[0],
- *   y: (i) => i[1],
+ *   toPoint: (i) => i,
+ *   fromPoint: (i) => i,
  *   epsilon:  Math.pow(10, -6)
  *   ignore: (i, j, iIdx, jIdx) => iIdx === jIdx
  * }
@@ -58,8 +58,8 @@ export default function StressMajorization<T>(
     weight: w,
     stress: s,
     ignore = (_vi: T, _vj: T, i: number, j: number) => i === j,
-    x = (i: any) => i[0],
-    y = (i: any) => i[1],
+    fromPoint = (n: Point) => (n as unknown) as T,
+    toPoint = (n: any) => n as Point,
     epsilon = Math.pow(10, -6)
   } = options;
   const solve = function() {
@@ -70,13 +70,13 @@ export default function StressMajorization<T>(
       const update: T[] = [];
       for (let i = 0; i < _data.length; i++) {
         const vi = _data[i];
-        const iPt: Point = [x(vi), y(vi)];
+        const iPt: Point = toPoint(vi);
         let topSum: Point = [0, 0];
         let wijSum: number = 0;
         for (let j = 0; j < _data.length; j++) {
           const vj = _data[j];
           if (ignore(vi, vj, i, j)) continue; // ignore
-          const jPt: Point = [x(vj), y(vj)];
+          const jPt: Point = toPoint(vj);
           const w_ij = w(vi, vj);
           //* sum += w_{i,j} (j + s_{i,j}(i - j))
           topSum = add(
@@ -88,7 +88,7 @@ export default function StressMajorization<T>(
         const iPtNew = div(topSum, wijSum);
         currentEpsilon += length(sub(iPt, iPtNew));
         //* \frac{\sum_{j!=i, j \in V} w_{i,j} (j + s_{i,j}(i - j))}{\sum w_ij}
-        update.push({ ...vi, ...iPtNew });
+        update.push({ ...vi, ...fromPoint(iPtNew) });
       }
       currentEpsilon /= update.length;
       _data = update;
