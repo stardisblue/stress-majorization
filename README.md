@@ -15,11 +15,11 @@ A future implementation may include n dimensional data.
 
 ## Installing
 
-:construction: **SOON&trade;** :construction: Using npm:
+Using npm:
 
     $ npm install stress-majorization
 
-:construction: **SOON&trade;** :construction: Using yarn:
+Using yarn:
 
     $ yarn add stress-majorization
 
@@ -262,7 +262,7 @@ contains basic operations for vector manipulation
 
 ## License
 
-MIT <3
+see [LICENSE](./LICENSE.md) <3
 
 ## Authors
 
