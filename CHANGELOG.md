@@ -1,3 +1,11 @@
+# 1.1.0 (2019.10.11)
+
+Big update, please upgrade to be able to use custom datasets
+
+BREAKING CHANGE:
+
+- `x` and `y` accessors are not available anymore, they have been replaced with `fromPoint` and `toPoint`
+
 # 1.0.1 (2019.10.10)
 
 - fix: LICENSE MIT now for real
