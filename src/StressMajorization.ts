@@ -30,7 +30,7 @@ type Options<T> = {
  *   toPoint: (i) => i, // accessor to the x coordinate
  *   fromPoint: (i) => i, // accessor to the y coordinate
  *   epsilon: Math.pow(10, -6), // relative change of the configuration
- *   maxIterations: 10000, // number of maximum iteration before stopping
+ *   maxIterations: 10000, // number of maximum iteration before stopping, if <= 0, will be unlimited
  *   ignore: (i, j, iIdx, jIdx) => iIdx === jIdx, // ignores pair (i, j) when this function returns true
  * })
  * ```
@@ -76,6 +76,8 @@ export default function StressMajorization<T>(
     maxIterations = 10000
   } = options;
 
+  const unlimited = maxIterations <= 0;
+
   let currentEpsilon: number;
   let wijSum: number;
 
@@ -95,7 +97,7 @@ export default function StressMajorization<T>(
     points[2 * i + 1] = y;
   }
 
-  const iterations = new Float32Array(maxIterations);
+  const iterations = !unlimited ? new Float32Array(maxIterations) : [];
   let iteration = 0;
 
   do {
@@ -148,7 +150,7 @@ export default function StressMajorization<T>(
 
     iterations[iteration] = currentEpsilon;
     iteration++;
-  } while (currentEpsilon > epsilon && iteration < maxIterations);
+  } while (currentEpsilon > epsilon && iteration === maxIterations);
 
   // update position of dataset
   for (let i = 0; i < len; i++) {
@@ -160,7 +162,18 @@ export default function StressMajorization<T>(
     _data[mapData[i]] = { ...vi, ...fromPoint([xn, yn]) };
   }
 
-  const iteridx = iterations.findIndex(val => val === 0);
+  if (unlimited) {
+    return [_data, iterations as number[]];
+  }
 
-  return [_data, Array.from(iterations.slice(0, iteridx))];
+  const iteridx = iterations.findIndex((val: number) => val === 0);
+
+  return [
+    _data,
+    iteridx > 0
+      ? Array.from(iterations.slice(0, iteridx))
+      : iteridx === -1
+      ? Array.from(iterations)
+      : []
+  ];
 }

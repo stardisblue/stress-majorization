@@ -189,7 +189,7 @@ const options = {
   // Threshold of change between each iteration, if the change is less that epsilon, the aglorithm will stop and return the solution
   epsilon: number, // default to Math.pow(10, -6)
 
-  // Maximum iterations allowed, if the algorithm either reaches this or epsilon, it will return whatever the result was computed up to this point
+  // Maximum iterations allowed, if the algorithm either reaches this or epsilon, it will return whatever the result was computed up to this point. If set to 0, it will ignore the maximum iteration check
   maxIterations: number // default to 10000
 };
 ```
