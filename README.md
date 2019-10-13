@@ -44,20 +44,22 @@ const result = StressMajorization(
     fromPoint: (i) => i,
     toPoint: (i) => i,
     ignore: (_i, j, _iIdx, jIdx) => iIdx === jIdx,
-    epsilon: Math.pow(10, -6)
+    epsilon: Math.pow(10, -6),
+    maxIterations: 10000
     */
   }
 );
+// returns data with updated positions and an array containing epsilon for each iteration
+//    => [data, epsilons]
 ```
 
 > **:warning: Note** : in this example, points are named `i` and `j`, their indexes are `iIdx` and `jIdx`
 
 ### Custom datasets
 
-> **:warning: Note**: `dataset` can be anything as long it is an array : `[a, b, c, ...]`, the iteration is done over indexes, using a classical `for(i = 0; i< length; i++)`. Differents datastructures can lead to unwanted sideeffects.
+> **:warning: Note**: `dataset` can be an object with attributes `{a: {x: 10, y: 10}, b: {x: 11, y: 12}, /*...*/}` or an array : `[a, b, c, ...]`. If dataset is an object, keys will be retrieved using `Object.keys`.
 
-To allow custom data, you need to specify
-`x` and `y` accessors
+To allow custom data, define fromPoint and toPoint callbacks
 
 ```js
 const weight = () => 1; // example fill
@@ -65,7 +67,7 @@ const stress = () => 1; // not realcase
 
 const customData = [{ x: 0, y: 0 }, { x: 1, y: 10 } /*, ...*/];
 
-const result = StressMajorization(customData, {
+const [result, epsilons] = StressMajorization(customData, {
   weight: weight,
   stress: stress,
   fromPoint: ([x, y]) => ({ x, y }),
@@ -75,7 +77,7 @@ const result = StressMajorization(customData, {
 
 ### Ignore pairs
 
-By default `StressMajorization` is solved over all possible pairs of items in `data` (`O(n²`)), except if the pair is composed of the same item.
+By default `StressMajorization` is solved over all possible pairs of items in `data` (`O(n²`)), a pair of the same item will be ignored.
 It is possible to skip pairs by passing an `ignore` function in the options.
 
 ```js
@@ -89,7 +91,7 @@ const result = StressMajorization(data, {
 });
 ```
 
-> **:warning: Note**: Be careful when defining custom a ignore function, iterating over a pair `(i, i)` (same point) can result in funny behaviour
+> **:warning: Note**: Be careful when defining custom a ignore function, iterating over a pair `(i, i)` (same item in the pair) can result in funny behaviour
 
 ### Helpers
 
@@ -157,13 +159,13 @@ can be anything as long as it is an array of things with number coordinates
 const data = [[0, 0], [0, 1] /*...*/]; // works
 const data = [{ x: 1, y: 1 }, { x: 0, y: 5 } /*...*/]; // also works (with custom accessors)
 const data = [{ a: 1, z: 1 }, { a: 0, z: 5 } /*...*/]; // also works (with custom accessors)
-const data = { a: [0, 0], b: [0, 1] }; // does not work, not continous natural numbers
+const data = { a: [0, 0], b: [0, 1] }; // works, not continous natural numbers
 const data = [];
 data[0] = { x: 1, y: 1 };
-data[5] = { x: 1, y: 10 }; // does not work either, missing index between 0..5
+data[5] = { x: 1, y: 10 }; // will work
 ```
 
-### Configuration
+### `options`: Configuration
 
 > `i` and `j` are items of the data array. They have the same type, information other that those accessible via coordinate accessors are also available.
 
@@ -185,7 +187,10 @@ const options = {
   ignore: (i, j, iIdx, jIdx) => boolean, // default to (i, j, iIdx, jIdx) => iIdx === jIdx
 
   // Threshold of change between each iteration, if the change is less that epsilon, the aglorithm will stop and return the solution
-  epsilon: number // default to Math.pow(10, -6)
+  epsilon: number, // default to Math.pow(10, -6)
+
+  // Maximum iterations allowed, if the algorithm either reaches this or epsilon, it will return whatever the result was computed up to this point
+  maxIterations: number // default to 10000
 };
 ```
 

@@ -13,7 +13,7 @@ export const Point = {
   /** i \div a */
   div: (i: Point, a: number): Point => [i[0] / a, i[1] / a],
 
-  length: (i: Point): number => Math.hypot(...i)
+  length: (i: Point): number => Math.hypot(i[0], i[1])
 };
 
 export default Point;
