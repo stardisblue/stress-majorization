@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.0 (2019.10.14)
+
+### Features
+
+- now correcty returns result dataset
+- `fromPoint` has now a second parameter representing the data item.
+- introducing unit testing :)
+
+- correcting documentation
+
 ## 2.0.0 (2019.10.13)
 
 big performance update
