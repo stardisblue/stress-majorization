@@ -42,7 +42,7 @@ const result = StressMajorization(
     }
     /* Default options
     fromPoint: (i) => i,
-    toPoint: (i) => i,
+    toPoint: (i, n) => i,
     ignore: (_i, j, _iIdx, jIdx) => iIdx === jIdx,
     epsilon: Math.pow(10, -6),
     maxIterations: 10000
@@ -65,12 +65,15 @@ To allow custom data, define fromPoint and toPoint callbacks
 const weight = () => 1; // example fill
 const stress = () => 1; // not realcase
 
-const customData = [{ x: 0, y: 0 }, { x: 1, y: 10 } /*, ...*/];
+const customData = [
+  { x: 0, y: 0, z: 5 },
+  { x: 1, y: 10, z: 'Hello' } /*, ...*/
+];
 
 const [result, epsilons] = StressMajorization(customData, {
   weight: weight,
   stress: stress,
-  fromPoint: ([x, y]) => ({ x, y }),
+  fromPoint: ([x, y], n) => ({ ...n, x, y }),
   toPoint: ({ x, y }) => [x, y]
 });
 ```
@@ -177,8 +180,8 @@ const options = {
   // Stress function, i, j represents items from the dataset
   stress: (i, j) => number,
 
-  // converts `Point` (internal object structure) to coordinates of the output object.
-  fromPoint: ([x, y]) => ({ x, y }), // default to (i) => i
+  // converts `Point` (internal object structure) to coordinates of the output object. Passes new coordinates (Point ) and the current item (n)
+  fromPoint: ([x, y], n) => ({ x, y }), // default to (i) => i
 
   // converts data item to `Point` (internal)
   toPoint: ({ x, y }) => [x, y], // default to (i) => i
@@ -213,8 +216,8 @@ const Distance = {
 > **Note** `Point` will be used instead of `[number, number]` because it's easier to read
 
 - distance: `(i: Point, j:Point) => number`
-- toPoint: `(i: any) => Point`
-- fromPoint: `(i: Point) => any`
+- x: `(i: any) => number`
+- y: `(i: any) => number`
 
 ##### returns
 
@@ -228,8 +231,8 @@ const Distance = {
 > type Point = [number, number];
 > const DistanceFactory = <T>(
 >   distance: (i: Point, j: Point) => number,
->   fromPoint: (i: Point) => Partial<T>,
->   toPoint: (i: T) => Point
+>   x: (i: T) => number,
+>   y: (i: T) => number
 > ): (i: T, j: T) => number
 > ```
 
