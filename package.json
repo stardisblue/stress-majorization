@@ -10,9 +10,21 @@
   "author": "Fati Chen <fati.chen@lirmm.fr>",
   "license": "MIT",
   "scripts": {
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/dist/",
+      "/node_modules/"
+    ]
   },
   "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "typescript": "^3.6.3"
   },
   "dependencies": {}
