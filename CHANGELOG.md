@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.2.1 (2019.10.14)
+
+### Bugfix
+
+- removed unwanted round options
+
+### Docs
+
+- updated docs for 2.2.x
+
 ## 2.2.0 (2019.10.14)
 
 ### Features
