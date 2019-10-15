@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.2 (2019.10.14)
+
+- `epsilon` is now computed without being divided by the length of the dataset
+- various variable renaming for readability
+
 ## 2.2.1 (2019.10.14)
 
 ### Bugfix
