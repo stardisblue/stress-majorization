@@ -163,8 +163,8 @@ export default function StressMajorization<T>(
     }
     points = pointsNew;
 
-    // mean epsilon
-    currentEpsilon /= lenght;
+    // mean epsilon, should not be this :)
+    // currentEpsilon /= length;
 
     iterations[iter] = currentEpsilon;
     iter++;
