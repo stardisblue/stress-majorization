@@ -32,18 +32,18 @@ const StressMajorization = require('stress-majorization');
 const result = StressMajorization(
   /*data:*/ [[0, 0], [0, 1]],
   /*options:*/ {
-    weight: (i, j) => {
+    weight: (xi, yi, xj, yj, i, j) => {
       /*your custom code 
       returns number*/
     },
-    stress: (i, j) => {
+    stress: (xi, yi, xj, yj, i, j) => {
       /*your custom code 
       returns number*/
     }
     /* Default options
     fromPoint: (i) => i,
     toPoint: (i, n) => i,
-    ignore: (_i, j, _iIdx, jIdx) => iIdx === jIdx,
+    ignore: (iIdx, jIdx) => iIdx === jIdx,
     epsilon: Math.pow(10, -6),
     maxIterations: 10000
     */
@@ -57,7 +57,7 @@ const result = StressMajorization(
 
 ### Custom datasets
 
-> **:warning: Note**: `dataset` can be an object with attributes `{a: {x: 10, y: 10}, b: {x: 11, y: 12}, /*...*/}` or an array : `[a, b, c, ...]`. If dataset is an object, keys will be retrieved using `Object.keys`.
+> **Note**: `dataset` can be an object with attributes `{a: {x: 10, y: 10}, b: {x: 11, y: 12}, /*...*/}` or an array : `[a, b, c, ...]`. If dataset is an object, keys will be retrieved using `Object.keys`.
 
 To allow custom data, define fromPoint and toPoint callbacks
 
@@ -174,11 +174,11 @@ data[5] = { x: 1, y: 10 }; // will work
 
 ```js
 const options = {
-  // weight between two points. The points I, J will be the items from the dataset
-  weight: (i, j) => number,
+  // weight between two points. Xs and Ys are the position of the last iteration, i, j the items from the dataset
+  weight: (xi, yi, xj, yj, i, j) => number,
 
   // Stress function, i, j represents items from the dataset
-  stress: (i, j) => number,
+  stress: (xi, yi, xj, yj, i, j) => number,
 
   // converts `Point` (internal object structure) to coordinates of the output object. Passes new coordinates (Point ) and the current item (n)
   fromPoint: ([x, y], n) => ({ x, y }), // default to (i) => i
@@ -187,7 +187,7 @@ const options = {
   toPoint: ({ x, y }) => [x, y], // default to (i) => i
 
   // will ignore stress on this pair if yields true, iIdx and jIdx are the position of i, j in the data array
-  ignore: (i, j, iIdx, jIdx) => boolean, // default to (i, j, iIdx, jIdx) => iIdx === jIdx
+  ignore: (xi, yi, xj, yj, iIdx, jIdx, i, j) => boolean, // default to (iIdx, jIdx) => iIdx === jIdx
 
   // Threshold of change between each iteration, if the change is less that epsilon, the aglorithm will stop and return the solution
   epsilon: number, // default to Math.pow(10, -6)
