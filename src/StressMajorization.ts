@@ -113,8 +113,8 @@ export default function StressMajorization<T>(
     iData[i] = _data[mapData[i]];
     const [x, y] = toPoint(iData[i]);
 
-    points[2 * i] = Math.round(x);
-    points[2 * i + 1] = Math.round(y);
+    points[2 * i] = x;
+    points[2 * i + 1] = y;
   }
 
   const iterations = !unlimited ? new Float32Array(maxIterations) : [];
