@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.2.0 (2019.10.14)
+
+### Features
+
+- `weight(), stress(), and ignore()` have now last iteration positions for computation ease
+
+### BREAKING CHANGES:
+
+- `weight(xi, yi, xj, yj, u, v)`, `x`s and `y`s, are last iteration positions and `i` and `j` are items of the dataset
+- `stress(xi, yi, xj, yj, u, v)`
+- `ignore(i, j, xi, yi, xj, yj, u, v)` (`i`, `j`) are (internal) indexes of `u` and `v`
+
 ## 2.1.0 (2019.10.14)
 
 ### Features
