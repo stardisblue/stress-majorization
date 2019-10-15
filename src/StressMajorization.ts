@@ -71,7 +71,6 @@ type Options<T> = {
  * @returns an array containing the data and epsilons of each iterations :
  *  [data, epsilons]
  */
-
 export default function StressMajorization<T>(
   data: T[],
   options: Options<T>
@@ -96,19 +95,15 @@ export default function StressMajorization<T>(
     maxIterations = 10000
   } = options;
 
-  const unlimited = maxIterations <= 0;
-
-  let currentEpsilon: number;
-  let wijSum: number;
-
+  let sum_w: number;
   // @ts-ignore dirty fix for mapping
   const mapData: number[] = Object.keys(_data);
   const iData: T[] = new Array(mapData.length);
-  const lenght = iData.length;
+  const length = iData.length;
 
   // construct points
-  let points: Float32Array = new Float32Array(lenght * 2);
-  for (let i = 0; i < lenght; i++) {
+  let points: Float32Array = new Float32Array(length * 2);
+  for (let i = 0; i < length; i++) {
     // creating data[mapdata[i]] shorthand
     iData[i] = _data[mapData[i]];
     const [x, y] = toPoint(iData[i]);
@@ -117,26 +112,29 @@ export default function StressMajorization<T>(
     points[2 * i + 1] = y;
   }
 
-  const iterations = !unlimited ? new Float32Array(maxIterations) : [];
-  let iteration = 0;
+  const limited = maxIterations > 0;
 
+  const iterations = limited ? new Float32Array(maxIterations) : [];
+  let iter = 0;
+
+  let currentEpsilon: number;
   do {
     // main loop
     currentEpsilon = 0;
-    const pointsNew: Float32Array = new Float32Array(lenght * 2);
+    const pointsNew: Float32Array = new Float32Array(length * 2);
 
-    for (let i = 0; i < lenght; i++) {
+    for (let i = 0; i < length; i++) {
       const u = iData[i];
 
-      const xIIndex = 2 * i;
-      const yIIndex = 2 * i + 1;
+      const xi_idx = 2 * i;
+      const yi_idx = 2 * i + 1;
 
-      const xi = points[xIIndex];
-      const yi = points[yIIndex];
+      const xi = points[xi_idx];
+      const yi = points[yi_idx];
 
-      wijSum = 0;
+      sum_w = 0;
 
-      for (let j = 0; j < lenght; j++) {
+      for (let j = 0; j < length; j++) {
         const v = iData[j];
 
         const xj = points[2 * j];
@@ -147,20 +145,20 @@ export default function StressMajorization<T>(
         const s_ij = stress(xi, yi, xj, yj, u, v);
         const w_ij = weight(xi, yi, xj, yj, u, v);
 
-        wijSum += w_ij;
+        sum_w += w_ij;
 
         //* sum += w_{i, j} (j + s_{i, j}(i - j))
-        pointsNew[xIIndex] += w_ij * (xj + s_ij * (xi - xj));
-        pointsNew[yIIndex] += w_ij * (yj + s_ij * (yi - yj));
+        pointsNew[xi_idx] += w_ij * (xj + s_ij * (xi - xj));
+        pointsNew[yi_idx] += w_ij * (yj + s_ij * (yi - yj));
       }
 
       //* \frac{\sum_{j!=i, j \in V} w_{i,j} (j + s_{i,j}(i - j))}{\sum w_ij}
-      pointsNew[xIIndex] /= wijSum;
-      pointsNew[yIIndex] /= wijSum;
+      pointsNew[xi_idx] /= sum_w;
+      pointsNew[yi_idx] /= sum_w;
 
       currentEpsilon += Math.hypot(
-        pointsNew[xIIndex] - xi,
-        pointsNew[yIIndex] - yi
+        pointsNew[xi_idx] - xi,
+        pointsNew[yi_idx] - yi
       );
     }
     points = pointsNew;
@@ -168,21 +166,21 @@ export default function StressMajorization<T>(
     // mean epsilon
     currentEpsilon /= lenght;
 
-    iterations[iteration] = currentEpsilon;
-    iteration++;
-  } while (currentEpsilon > epsilon && iteration === maxIterations);
+    iterations[iter] = currentEpsilon;
+    iter++;
+  } while (currentEpsilon > epsilon && iter === maxIterations);
 
   // update position of dataset
-  for (let i = 0; i < lenght; i++) {
-    const vi = iData[i];
+  for (let i = 0; i < length; i++) {
+    const u = iData[i];
 
-    const xn = points[2 * i];
-    const yn = points[2 * i + 1];
+    const x = points[2 * i];
+    const y = points[2 * i + 1];
 
-    _data[mapData[i]] = fromPoint([xn, yn], vi);
+    _data[mapData[i]] = fromPoint([x, y], u);
   }
 
-  if (unlimited) {
+  if (!limited) {
     return [_data, iterations as number[]];
   }
 
