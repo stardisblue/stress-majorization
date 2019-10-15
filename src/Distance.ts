@@ -1,5 +1,7 @@
 import Point from './Point';
-import { PairFn, KeyFn } from './StressMajorization';
+import { KeyFn } from './StressMajorization';
+
+type PairFn<T> = (i: T, j: T) => number;
 
 /**
  * Basic distance calculations
@@ -26,3 +28,8 @@ export const DistanceFactory = <T>(
   x: KeyFn<T>,
   y: KeyFn<T>
 ): PairFn<T> => (i: T, j: T) => distance([x(i), y(i)], [x(j), y(j)]);
+
+export function round(number: number, precision: number = 0): number {
+  const multiplier = Math.pow(10, -precision) | 0;
+  return Math.round(number * multiplier) / multiplier;
+}

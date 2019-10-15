@@ -1,4 +1,4 @@
-import { PairFn } from './StressMajorization';
+type PairFn<T> = (i: T, j: T) => number;
 
 /**
  * Creates default Weight list based on how the distance computation
