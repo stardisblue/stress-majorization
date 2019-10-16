@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0 (2019.10.16)
+
+### Features
+
+- `OptimizedStressMajorization(data: Float32Array, options)` created for more finethuned control.
+
 ## 2.2.2 (2019.10.14)
 
 - `epsilon` is now computed without being divided by the length of the dataset
