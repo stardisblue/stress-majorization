@@ -1,4 +1,5 @@
 import Point from './Point';
+import OptimizedStressMajorization from './OptimizedStressMajorization';
 
 export type KeyFn<T> = (i: T) => number;
 
@@ -95,7 +96,6 @@ export default function StressMajorization<T>(
     maxIterations = 10000
   } = options;
 
-  let sum_w: number;
   // @ts-ignore dirty fix for mapping
   const mapData: number[] = Object.keys(_data);
   const iData: T[] = new Array(mapData.length);
@@ -112,86 +112,26 @@ export default function StressMajorization<T>(
     points[2 * i + 1] = y;
   }
 
-  const limited = maxIterations > 0;
-
-  const iterations = limited ? new Float32Array(maxIterations) : [];
-  let iter = 0;
-
-  let currentEpsilon: number;
-  do {
-    // main loop
-    currentEpsilon = 0;
-    const pointsNew: Float32Array = new Float32Array(length * 2);
-
-    for (let i = 0; i < length; i++) {
-      const u = iData[i];
-
-      const xi_idx = 2 * i;
-      const yi_idx = 2 * i + 1;
-
-      const xi = points[xi_idx];
-      const yi = points[yi_idx];
-
-      sum_w = 0;
-
-      for (let j = 0; j < length; j++) {
-        const v = iData[j];
-
-        const xj = points[2 * j];
-        const yj = points[2 * j + 1];
-
-        if (ignore(i, j, xi, yi, xj, yj, u, v)) continue; // ignore
-
-        const s_ij = stress(xi, yi, xj, yj, u, v);
-        const w_ij = weight(xi, yi, xj, yj, u, v);
-
-        sum_w += w_ij;
-
-        //* sum += w_{i, j} (j + s_{i, j}(i - j))
-        pointsNew[xi_idx] += w_ij * (xj + s_ij * (xi - xj));
-        pointsNew[yi_idx] += w_ij * (yj + s_ij * (yi - yj));
-      }
-
-      //* \frac{\sum_{j!=i, j \in V} w_{i,j} (j + s_{i,j}(i - j))}{\sum w_ij}
-      pointsNew[xi_idx] /= sum_w;
-      pointsNew[yi_idx] /= sum_w;
-
-      currentEpsilon += Math.hypot(
-        pointsNew[xi_idx] - xi,
-        pointsNew[yi_idx] - yi
-      );
-    }
-    points = pointsNew;
-
-    // mean epsilon, should not be this :)
-    // currentEpsilon /= length;
-
-    iterations[iter] = currentEpsilon;
-    iter++;
-  } while (currentEpsilon > epsilon && iter === maxIterations);
+  let [newPoints, iterations] = OptimizedStressMajorization(points, {
+    epsilon: epsilon,
+    ignore: (i, j, xi, yi, xj, yj) =>
+      ignore(i, j, xi, yi, xj, yj, iData[i], iData[j]),
+    weight: (xi, yi, xj, yj, i, j) =>
+      weight(xi, yi, xj, yj, iData[i], iData[j]),
+    stress: (xi, yi, xj, yj, i, j) =>
+      stress(xi, yi, xj, yj, iData[i], iData[j]),
+    maxIterations
+  });
 
   // update position of dataset
   for (let i = 0; i < length; i++) {
     const u = iData[i];
 
-    const x = points[2 * i];
-    const y = points[2 * i + 1];
+    const x = newPoints[2 * i];
+    const y = newPoints[2 * i + 1];
 
     _data[mapData[i]] = fromPoint([x, y], u);
   }
 
-  if (!limited) {
-    return [_data, iterations as number[]];
-  }
-
-  const iteridx = iterations.findIndex((val: number) => val === 0);
-
-  return [
-    _data,
-    iteridx > 0
-      ? Array.from(iterations.slice(0, iteridx))
-      : iteridx === -1
-      ? Array.from(iterations)
-      : []
-  ];
+  return [_data, iterations];
 }
