@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.1 (2019.10.17)
+
+### Features
+
+- bug: bad loop check when applying stress majorization algorithm
+
 ## 2.3.0 (2019.10.16)
 
 ### Features
