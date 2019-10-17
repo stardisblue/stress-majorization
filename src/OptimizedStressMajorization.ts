@@ -119,7 +119,6 @@ export default function OptimizedStressMajorization(
 
       currEpsi += Math.hypot(pointsNew[xi_idx] - xi, pointsNew[yi_idx] - yi);
     }
-
     points = pointsNew;
 
     // mean epsilon, should not be this :)
@@ -128,8 +127,8 @@ export default function OptimizedStressMajorization(
     iter++;
     // loop while relative change > epsilon and didn't reach maximum iterations
   } while (
-    (iter === 1 || iterations[iter - 2] - currEpsi > epsilon) &&
-    iter === maxIterations
+    (iter === 1 || Math.abs(iterations[iter - 2] - currEpsi) > epsilon) &&
+    iter !== maxIterations
   );
 
   if (!limited) {
